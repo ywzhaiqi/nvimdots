@@ -75,11 +75,9 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object
 - **\*nix**
 
 ```sh
-if command -v curl >/dev/null 2>&1; then
-    bash -c "$(curl -fsSL https://fastly.jsdelivr.net/gh/ywzhaiqi/nvimdots@main/scripts/install.sh)"
-else
-    bash -c "$(wget -O- https://fastly.jsdelivr.net/gh/ywzhaiqi/nvimdots@main/scripts/install.sh)"
-fi
+bash -c "$(curl -fsSL https://ghproxy.com/https://raw.githubusercontent.com/ywzhaiqi/nvimdots/main/scripts/install.sh)"
+或
+bash -c "$(curl -fsSL https://ghproxy.com/https://ghproxy.com/ywzhaiqi/nvimdots@main/scripts/install.sh)"
 ```
 
 It's strongly recommended to read [Wiki: Prerequisites](https://github.com/ayamir/nvimdots/wiki/Prerequisites) before starting, especially for \*nix users.
