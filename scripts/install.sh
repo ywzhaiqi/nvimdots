@@ -268,11 +268,11 @@ EOABORT
 	fi
 else
 	if check_nvim_version "${REQUIRED_NVIM_VERSION}"; then
-		execute "git" "clone" "-b" "main" "${CLONE_ATTR[@]}" "${GITHUB}/ayamir/nvimdots.git" "${DEST_DIR}"
+		execute "git" "clone" "-b" "main" "${CLONE_ATTR[@]}" "${GITHUB}/ywzhaiqi/nvimdots.git" "${DEST_DIR}"
 	elif check_nvim_version "${REQUIRED_NVIM_VERSION_LEGACY}"; then
 		warn "You have outdated Nvim installed (< ${REQUIRED_NVIM_VERSION})."
 		info "Automatically redirecting you to the latest compatible version..."
-		execute "git" "clone" "-b" "0.8" "${CLONE_ATTR[@]}" "${GITHUB}/ayamir/nvimdots.git" "${DEST_DIR}"
+		execute "git" "clone" "-b" "0.8" "${CLONE_ATTR[@]}" "${GITHUB}/ywzhaiqi/nvimdots.git" "${DEST_DIR}"
 	else
 		warn "You have outdated Nvim installed (< ${REQUIRED_NVIM_VERSION_LEGACY})."
 		abort "$(
