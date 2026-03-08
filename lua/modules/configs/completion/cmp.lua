@@ -4,19 +4,16 @@ return function()
 		type = require("modules.utils.icons").get("type"),
 		cmp = require("modules.utils.icons").get("cmp"),
 	}
-	local t = function(str)
-		return vim.api.nvim_replace_termcodes(str, true, true, true)
-	end
 
 	local border = function(hl)
 		return {
-			{ "╭", hl },
+			{ "┌", hl },
 			{ "─", hl },
-			{ "╮", hl },
+			{ "┐", hl },
 			{ "│", hl },
-			{ "╯", hl },
+			{ "┘", hl },
 			{ "─", hl },
-			{ "╰", hl },
+			{ "└", hl },
 			{ "│", hl },
 		}
 	end
@@ -32,78 +29,80 @@ return function()
 		return (diff < 0)
 	end
 
-	local function cmp_format(opts)
-		opts = opts or {}
-
-		return function(entry, vim_item)
-			if opts.before then
-				vim_item = opts.before(entry, vim_item)
-			end
-
-			local kind_symbol = opts.symbol_map[vim_item.kind] or icons.kind.Undefined
-			local source_symbol = opts.symbol_map[entry.source.name] or icons.cmp.undefined
-
-			vim_item.menu = " " .. source_symbol .. "  |"
-			vim_item.kind = string.format("  〔 %s %s 〕", kind_symbol, vim_item.kind)
-
-			if opts.maxwidth ~= nil then
-				if opts.ellipsis_char == nil then
-					vim_item.abbr = string.sub(vim_item.abbr, 1, opts.maxwidth)
-				else
-					local label = vim_item.abbr
-					local truncated_label = vim.fn.strcharpart(label, 0, opts.maxwidth)
-					if truncated_label ~= label then
-						vim_item.abbr = truncated_label .. opts.ellipsis_char
-					end
-				end
-			end
-			return vim_item
-		end
-	end
+	local comparators = vim.list_extend(require("core.settings").use_copilot and {
+		require("copilot_cmp.comparators").prioritize,
+		require("copilot_cmp.comparators").score,
+	} or {}, {
+		compare.offset, -- Items closer to cursor will have lower priority
+		compare.exact,
+		-- compare.scopes,
+		compare.lsp_scores,
+		compare.sort_text,
+		compare.score,
+		compare.recently_used,
+		-- compare.locality, -- Items closer to cursor will have higher priority, conflicts with `offset`
+		require("cmp-under-comparator").under,
+		compare.kind,
+		compare.length,
+		compare.order,
+	})
 
 	local cmp = require("cmp")
-	cmp.setup({
-		preselect = cmp.PreselectMode.Item,
+	require("modules.utils").load_plugin("cmp", {
+		preselect = cmp.PreselectMode.None,
 		window = {
 			completion = {
-				border = border("Normal"),
-				max_width = 80,
-				max_height = 20,
+				border = border("PmenuBorder"),
+				winhighlight = "Normal:Pmenu,CursorLine:PmenuSel,Search:PmenuSel",
 				scrollbar = false,
 			},
 			documentation = {
 				border = border("CmpDocBorder"),
+				winhighlight = "Normal:CmpDoc",
 			},
 		},
 		sorting = {
 			priority_weight = 2,
-			comparators = {
-				require("copilot_cmp.comparators").prioritize,
-				require("copilot_cmp.comparators").score,
-				-- require("cmp_tabnine.compare"),
-				compare.offset, -- Items closer to cursor will have lower priority
-				compare.exact,
-				-- compare.scopes,
-				compare.lsp_scores,
-				compare.sort_text,
-				compare.score,
-				compare.recently_used,
-				-- compare.locality, -- Items closer to cursor will have higher priority, conflicts with `offset`
-				require("cmp-under-comparator").under,
-				compare.kind,
-				compare.length,
-				compare.order,
-			},
+			comparators = comparators,
 		},
 		formatting = {
-			fields = { "menu", "abbr", "kind" },
+			fields = { "abbr", "kind", "menu" },
 			format = function(entry, vim_item)
-				local kind_map = vim.tbl_deep_extend("force", icons.kind, icons.type, icons.cmp)
-				local kind = cmp_format({
-					maxwidth = 50,
-					symbol_map = kind_map,
-				})(entry, vim_item)
-				return kind
+				local lspkind_icons = vim.tbl_deep_extend("force", icons.kind, icons.type, icons.cmp)
+				-- load lspkind icons
+				vim_item.kind =
+					string.format(" %s  %s", lspkind_icons[vim_item.kind] or icons.cmp.undefined, vim_item.kind or "")
+
+				-- set up labels for completion entries
+				vim_item.menu = setmetatable({
+					copilot = "[CPLT]",
+					buffer = "[BUF]",
+					orgmode = "[ORG]",
+					nvim_lsp = "[LSP]",
+					path = "[PATH]",
+					tmux = "[TMUX]",
+					latex_symbols = "[LTEX]",
+					luasnip = "[SNIP]",
+					spell = "[SPELL]",
+				}, {
+					__index = function()
+						return "[BTN]" -- builtin/unknown source names
+					end,
+				})[entry.source.name]
+
+				-- cut down long results
+				local label = vim_item.abbr
+				local truncated_label = vim.fn.strcharpart(label, 0, 80)
+				if truncated_label ~= label then
+					vim_item.abbr = truncated_label .. "..."
+				end
+
+				-- deduplicate results from nvim_lsp
+				if entry.source.name == "nvim_lsp" then
+					vim_item.dup = 0
+				end
+
+				return vim_item
 			end,
 		},
 		matching = {
@@ -111,34 +110,44 @@ return function()
 		},
 		performance = {
 			async_budget = 1,
-			max_view_entries = 300,
+			max_view_entries = 120,
 		},
 		-- You can set mappings if you want
 		mapping = cmp.mapping.preset.insert({
-			["<CR>"] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace }),
-			["<C-p>"] = cmp.mapping.select_prev_item(),
-			["<C-n>"] = cmp.mapping.select_next_item(),
+			["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
+			["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
 			["<C-d>"] = cmp.mapping.scroll_docs(-4),
 			["<C-f>"] = cmp.mapping.scroll_docs(4),
-			["<C-w>"] = cmp.mapping.close(),
+			["<C-w>"] = cmp.mapping.abort(),
 			["<Tab>"] = cmp.mapping(function(fallback)
 				if cmp.visible() then
-					cmp.select_next_item()
+					cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
 				elseif require("luasnip").expand_or_locally_jumpable() then
-					vim.fn.feedkeys(t("<Plug>luasnip-expand-or-jump"))
+					require("luasnip").expand_or_jump()
 				else
 					fallback()
 				end
 			end, { "i", "s" }),
 			["<S-Tab>"] = cmp.mapping(function(fallback)
 				if cmp.visible() then
-					cmp.select_prev_item()
+					cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
 				elseif require("luasnip").jumpable(-1) then
-					vim.fn.feedkeys(t("<Plug>luasnip-jump-prev"), "")
+					require("luasnip").jump(-1)
 				else
 					fallback()
 				end
 			end, { "i", "s" }),
+			["<CR>"] = cmp.mapping({
+				i = function(fallback)
+					if cmp.visible() and cmp.get_active_entry() then
+						cmp.confirm({ behavior = cmp.ConfirmBehavior.Insert, select = false })
+					else
+						fallback()
+					end
+				end,
+				s = cmp.mapping.confirm({ select = true }),
+				c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Insert, select = true }),
+			}),
 		}),
 		snippet = {
 			expand = function(args)
@@ -147,29 +156,22 @@ return function()
 		},
 		-- You should specify your *installed* sources.
 		sources = {
-			{ name = "nvim_lsp" },
-			{ name = "nvim_lua" },
+			{ name = "nvim_lsp", max_item_count = 350 },
 			{ name = "luasnip" },
 			{ name = "path" },
-			{
-				name = "treesitter",
-				entry_filter = function(entry)
-					local ignore_list = {
-						"Error",
-						"Comment",
-					}
-					local kind = entry:get_completion_item().cmp.kind_text
-					return not vim.tbl_contains(ignore_list, kind)
-				end,
-			},
 			{ name = "spell" },
 			{ name = "tmux" },
 			{ name = "orgmode" },
-			{ name = "buffer" },
+			{
+				name = "buffer",
+				option = {
+					get_bufnrs = function()
+						return vim.api.nvim_buf_line_count(0) < 15000 and vim.api.nvim_list_bufs() or {}
+					end,
+				},
+			},
 			{ name = "latex_symbols" },
 			{ name = "copilot" },
-			-- { name = "codeium" },
-			-- { name = "cmp_tabnine" },
 		},
 		experimental = {
 			ghost_text = {

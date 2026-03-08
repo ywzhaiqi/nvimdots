@@ -1,6 +1,6 @@
 return function()
 	vim.defer_fn(function()
-		require("copilot").setup({
+		require("modules.utils").load_plugin("copilot", {
 			cmp = {
 				enabled = true,
 				method = "getCompletionsCycling",
@@ -15,7 +15,12 @@ return function()
 			},
 			filetypes = {
 				["dap-repl"] = false,
-				["big_file_disabled_ft"] = false,
+				["fugitive"] = false,
+				["fugitiveblame"] = false,
+				["git"] = false,
+				["gitcommit"] = false,
+				["log"] = false,
+				["toggleterm"] = false,
 			},
 		})
 	end, 100)

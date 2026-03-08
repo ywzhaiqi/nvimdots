@@ -1,38 +1,44 @@
 local editor = {}
 
-editor["rainbowhxch/accelerated-jk.nvim"] = {
+editor["olimorris/persisted.nvim"] = {
 	lazy = true,
-	event = "VeryLazy",
-	config = require("editor.accelerated-jk"),
-}
-editor["rmagatti/auto-session"] = {
-	lazy = true,
-	cmd = { "SessionSave", "SessionRestore", "SessionDelete" },
-	config = require("editor.auto-session"),
+	cmd = {
+		"SessionToggle",
+		"SessionStart",
+		"SessionStop",
+		"SessionSave",
+		"SessionLoad",
+		"SessionLoadLast",
+		"SessionLoadFromFile",
+		"SessionDelete",
+	},
+	config = require("editor.persisted"),
 }
 editor["m4xshen/autoclose.nvim"] = {
 	lazy = true,
 	event = "InsertEnter",
 	config = require("editor.autoclose"),
 }
-editor["max397574/better-escape.nvim"] = {
-	lazy = true,
-	event = { "CursorHold", "CursorHoldI" },
-	config = require("editor.better-escape"),
-}
-editor["LunarVim/bigfile.nvim"] = {
+editor["pteroctopus/faster.nvim"] = {
 	lazy = false,
-	config = require("editor.bigfile"),
 	cond = require("core.settings").load_big_files_faster,
+	config = require("editor.faster"),
 }
 editor["ojroques/nvim-bufdel"] = {
 	lazy = true,
-	event = "BufReadPost",
+	cmd = { "BufDel", "BufDelAll", "BufDelOthers" },
 }
-editor["rhysd/clever-f.vim"] = {
+-- NOTE: `flash.nvim` is a powerful plugin that can be used as partial or complete replacements for:
+--  > `hop.nvim`,
+--  > `wilder.nvim`
+--  > `nvim-treehopper`
+-- Considering its steep learning curve as well as backward compatibility issues...
+--  > We have no plan to remove the above plugins for the time being.
+-- But as usual, you can always tweak the plugin to your liking.
+editor["folke/flash.nvim"] = {
 	lazy = true,
-	event = { "BufReadPost", "BufAdd", "BufNewFile" },
-	config = require("editor.cleverf"),
+	event = { "CursorHold", "CursorHoldI" },
+	config = require("editor.flash"),
 }
 editor["numToStr/Comment.nvim"] = {
 	lazy = true,
@@ -42,21 +48,28 @@ editor["numToStr/Comment.nvim"] = {
 editor["sindrets/diffview.nvim"] = {
 	lazy = true,
 	cmd = { "DiffviewOpen", "DiffviewClose" },
+	config = require("editor.diffview"),
 }
-editor["junegunn/vim-easy-align"] = {
-	lazy = true,
-	cmd = "EasyAlign",
-}
-editor["phaazon/hop.nvim"] = {
-	lazy = true,
-	branch = "v2",
-	event = "BufReadPost",
-	config = require("editor.hop"),
-}
-editor["RRethy/vim-illuminate"] = {
+editor["echasnovski/mini.align"] = {
 	lazy = true,
 	event = { "CursorHold", "CursorHoldI" },
-	config = require("editor.vim-illuminate"),
+	config = require("editor.align"),
+}
+editor["echasnovski/mini.cursorword"] = {
+	lazy = true,
+	event = { "BufReadPost", "BufAdd", "BufNewFile" },
+	config = require("editor.cursorword"),
+}
+editor["smoka7/hop.nvim"] = {
+	lazy = true,
+	version = "*",
+	event = { "CursorHold", "CursorHoldI" },
+	config = require("editor.hop"),
+}
+editor["brenoprata10/nvim-highlight-colors"] = {
+	lazy = true,
+	event = { "CursorHold", "CursorHoldI" },
+	config = require("editor.highlight-colors"),
 }
 editor["romainl/vim-cool"] = {
 	lazy = true,
@@ -65,39 +78,56 @@ editor["romainl/vim-cool"] = {
 editor["lambdalisue/suda.vim"] = {
 	lazy = true,
 	cmd = { "SudaRead", "SudaWrite" },
-	config = require("editor.suda"),
+	init = require("editor.suda"),
 }
-
+editor["tpope/vim-sleuth"] = {
+	lazy = true,
+	event = { "BufNewFile", "BufReadPost", "BufFilePost" },
+}
+editor["MagicDuck/grug-far.nvim"] = {
+	lazy = true,
+	cmd = "GrugFar",
+	config = require("editor.grug-far"),
+}
 ----------------------------------------------------------------------
 --                  :treesitter related plugins                    --
 ----------------------------------------------------------------------
 editor["nvim-treesitter/nvim-treesitter"] = {
-	lazy = true,
+	lazy = false, -- nvim-ts cannot lazy load now
+	branch = "main",
 	build = function()
-		if #vim.api.nvim_list_uis() ~= 0 then
-			vim.api.nvim_command("TSUpdate")
+		if #vim.api.nvim_list_uis() > 0 then
+			vim.api.nvim_command([[TSUpdate]])
 		end
 	end,
-	event = { "CursorHold", "CursorHoldI" },
 	config = require("editor.treesitter"),
 	dependencies = {
-		{ "nvim-treesitter/nvim-treesitter-textobjects" },
-		{ "nvim-treesitter/nvim-treesitter-context" },
-		{ "mrjones2014/nvim-ts-rainbow" },
-		{ "JoosepAlviste/nvim-ts-context-commentstring" },
 		{ "mfussenegger/nvim-treehopper" },
-		{ "andymass/vim-matchup" },
+		{
+			"nvim-treesitter/nvim-treesitter-textobjects",
+			branch = "main",
+			config = require("editor.ts-textobjects"),
+		},
+		{
+			"andymass/vim-matchup",
+			init = require("editor.matchup"),
+		},
 		{
 			"windwp/nvim-ts-autotag",
 			config = require("editor.autotag"),
 		},
 		{
-			"NvChad/nvim-colorizer.lua",
-			config = require("editor.colorizer"),
+			"hiphish/rainbow-delimiters.nvim",
+			submodules = false,
+			config = require("editor.rainbow_delims"),
 		},
 		{
-			"abecodes/tabout.nvim",
-			config = require("editor.tabout"),
+			"nvim-treesitter/nvim-treesitter-context",
+			config = require("editor.ts-context"),
+		},
+		{
+			"JoosepAlviste/nvim-ts-context-commentstring",
+			config = require("editor.ts-context-commentstring"),
 		},
 	},
 }

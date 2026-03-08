@@ -1,29 +1,8 @@
 return function()
-	local alpha = require("alpha")
 	local dashboard = require("alpha.themes.dashboard")
 	require("modules.utils").gen_alpha_hl()
 
-	dashboard.section.header.val = {
-		[[⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]],
-		[[⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⣠⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]],
-		[[⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣡⣾⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣿⣿⣟⠻⣿⣿⣿⣿⣿⣿⣿⣿]],
-		[[⣿⣿⣿⣿⣿⣿⣿⣿⡿⢫⣷⣿⣿⣿⣿⣿⣿⣿⣾⣯⣿⡿⢧⡚⢷⣌⣽⣿⣿⣿⣿⣿⣶⡌⣿⣿⣿⣿⣿⣿]],
-		[[⣿⣿⣿⣿⣿⣿⣿⣿⠇⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣮⣇⣘⠿⢹⣿⣿⣿⣿⣿⣻⢿⣿⣿⣿⣿⣿]],
-		[[⣿⣿⣿⣿⣿⣿⣿⣿⠀⢸⣿⣿⡇⣿⣿⣿⣿⣿⣿⣿⣿⡟⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣻⣿⣿⣿⣿]],
-		[[⣿⣿⣿⣿⣿⣿⣿⡇⠀⣬⠏⣿⡇⢻⣿⣿⣿⣿⣿⣿⣿⣷⣼⣿⣿⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⢻⣿⣿⣿⣿]],
-		[[⣿⣿⣿⣿⣿⣿⣿⠀⠈⠁⠀⣿⡇⠘⡟⣿⣿⣿⣿⣿⣿⣿⣿⡏⠿⣿⣟⣿⣿⣿⣿⣿⣿⣿⣿⣇⣿⣿⣿⣿]],
-		[[⣿⣿⣿⣿⣿⣿⡏⠀⠀⠐⠀⢻⣇⠀⠀⠹⣿⣿⣿⣿⣿⣿⣩⡶⠼⠟⠻⠞⣿⡈⠻⣟⢻⣿⣿⣿⣿⣿⣿⣿]],
-		[[⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⢿⠀⡆⠀⠘⢿⢻⡿⣿⣧⣷⢣⣶⡃⢀⣾⡆⡋⣧⠙⢿⣿⣿⣟⣿⣿⣿⣿]],
-		[[⣿⣿⣿⣿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⡥⠂⡐⠀⠁⠑⣾⣿⣿⣾⣿⣿⣿⡿⣷⣷⣿⣧⣾⣿⣿⣿⣿⣿⣿⣿]],
-		[[⣿⣿⡿⣿⣍⡴⠆⠀⠀⠀⠀⠀⠀⠀⠀⣼⣄⣀⣷⡄⣙⢿⣿⣿⣿⣿⣯⣶⣿⣿⢟⣾⣿⣿⢡⣿⣿⣿⣿⣿]],
-		[[⣿⡏⣾⣿⣿⣿⣷⣦⠀⠀⠀⢀⡀⠀⠀⠠⣭⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⣡⣾⣿⣿⢏⣾⣿⣿⣿⣿⣿]],
-		[[⣿⣿⣿⣿⣿⣿⣿⣿⡴⠀⠀⠀⠀⠀⠠⠀⠰⣿⣿⣿⣷⣿⠿⠿⣿⣿⣭⡶⣫⠔⢻⢿⢇⣾⣿⣿⣿⣿⣿⣿]],
-		[[⣿⣿⣿⡿⢫⣽⠟⣋⠀⠀⠀⠀⣶⣦⠀⠀⠀⠈⠻⣿⣿⣿⣾⣿⣿⣿⣿⡿⣣⣿⣿⢸⣾⣿⣿⣿⣿⣿⣿⣿]],
-		[[⡿⠛⣹⣶⣶⣶⣾⣿⣷⣦⣤⣤⣀⣀⠀⠀⠀⠀⠀⠀⠉⠛⠻⢿⣿⡿⠫⠾⠿⠋⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]],
-		[[⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣀⡆⣠⢀⣴⣏⡀⠀⠀⠀⠉⠀⠀⢀⣠⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]],
-		[[⠿⠛⠛⠛⠛⠛⠛⠻⢿⣿⣿⣿⣿⣯⣟⠷⢷⣿⡿⠋⠀⠀⠀⠀⣵⡀⢠⡿⠋⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]],
-		[[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠛⢿⣿⣿⠂⠀⠀⠀⠀⠀⢀⣽⣿⣿⣿⣿⣿⣿⣿⣍⠛⠿⣿⣿⣿⣿⣿⣿]],
-	}
+	dashboard.section.header.val = require("core.settings").dashboard_image
 	dashboard.section.header.opts.hl = "AlphaHeader"
 
 	local function button(sc, txt, leader_txt, keybind, keybind_opts)
@@ -35,8 +14,8 @@ return function()
 			cursor = 5,
 			width = 50,
 			align_shortcut = "right",
-			hl = "AlphaButton",
-			hl_shortcut = "AlphaAttr",
+			hl = "AlphaButtons",
+			hl_shortcut = "AlphaShortcut",
 		}
 
 		if nil == keybind then
@@ -60,65 +39,58 @@ return function()
 	end
 
 	local leader = " "
-	dashboard.section.buttons.val = {
-		button("space f c", " Scheme change", leader, nil, {
-			noremap = true,
-			silent = true,
-			nowait = true,
-			callback = function()
-				require("telescope.builtin").colorscheme()
-			end,
-		}),
-		button("space f r", " File frecency", leader, nil, {
-			noremap = true,
-			silent = true,
-			nowait = true,
-			callback = function()
-				require("telescope").extensions.frecency.frecency()
-			end,
-		}),
-		button("space f e", "󰋚 File history", leader, nil, {
-			noremap = true,
-			silent = true,
-			nowait = true,
-			callback = function()
-				require("telescope.builtin").oldfiles()
-			end,
-		}),
-		button("space f p", " Project find", leader, nil, {
-			noremap = true,
-			silent = true,
-			nowait = true,
-			callback = function()
-				require("telescope").extensions.projects.projects({})
-			end,
-		}),
-		button("space f f", "󰈞 File find", leader, nil, {
-			noremap = true,
-			silent = true,
-			nowait = true,
-			callback = function()
-				require("telescope.builtin").find_files()
-			end,
-		}),
-		button("space f n", " File new", leader, nil, {
-			noremap = true,
-			silent = true,
-			nowait = true,
-			callback = function()
-				vim.api.nvim_command("enew")
-			end,
-		}),
-		button("space f w", " Word find", leader, nil, {
-			noremap = true,
-			silent = true,
-			nowait = true,
-			callback = function()
-				require("telescope.builtin").live_grep()
-			end,
-		}),
+	local icons = {
+		documents = require("modules.utils.icons").get("documents", true),
+		git = require("modules.utils.icons").get("git", true),
+		ui = require("modules.utils.icons").get("ui", true),
+		misc = require("modules.utils.icons").get("misc", true),
 	}
-	dashboard.section.buttons.opts.hl = "AlphaButton"
+
+	dashboard.section.buttons.val = {
+		button(
+			"space f c",
+			icons.misc.Neovim .. "Telescope collections",
+			leader,
+			nil,
+			{ noremap = true, silent = true, nowait = true }
+		),
+		button(
+			"space f f",
+			icons.documents.FileFind .. "Find files",
+			leader,
+			nil,
+			{ noremap = true, silent = true, nowait = true }
+		),
+		button(
+			"space f d",
+			icons.ui.FolderWithHeart .. "Retrieve dossiers",
+			leader,
+			nil,
+			{ noremap = true, silent = true, nowait = true }
+		),
+		button(
+			"space f p",
+			icons.documents.Word .. "Find patterns",
+			leader,
+			nil,
+			{ noremap = true, silent = true, nowait = true }
+		),
+		button(
+			"space f g",
+			icons.git.Git .. "Locate Git objects",
+			leader,
+			nil,
+			{ noremap = true, silent = true, nowait = true }
+		),
+		button(
+			"space f m",
+			icons.misc.Ghost .. "Miscellaneous artifacts",
+			leader,
+			nil,
+			{ noremap = true, silent = true, nowait = true }
+		),
+	}
+	dashboard.section.buttons.opts.hl = "AlphaButtons"
 
 	local function footer()
 		local stats = require("lazy").stats()
@@ -142,7 +114,7 @@ return function()
 
 	local head_butt_padding = 2
 	local occu_height = #dashboard.section.header.val + 2 * #dashboard.section.buttons.val + head_butt_padding
-	local header_padding = math.max(0, math.ceil((vim.fn.winheight("$") - occu_height) * 0.25))
+	local header_padding = math.max(0, math.ceil((vim.fn.winheight(0) - occu_height) * 0.25))
 	local foot_butt_padding = 1
 
 	dashboard.config.layout = {
@@ -154,7 +126,7 @@ return function()
 		dashboard.section.footer,
 	}
 
-	alpha.setup(dashboard.opts)
+	require("modules.utils").load_plugin("alpha", dashboard.opts)
 
 	vim.api.nvim_create_autocmd("User", {
 		pattern = "LazyVimStarted",
